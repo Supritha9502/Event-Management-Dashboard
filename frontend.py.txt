@@ -1,0 +1,47 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const Dashboard = () => {
+  const [events, setEvents] = useState([]);
+  const [attendees, setAttendees] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    const res = await axios.get('/events');
+    setEvents(res.data);
+  };
+
+  const handleAddEvent = async (event) => {
+    const res = await axios.post('/events', event);
+    setEvents([...events, res.data]);
+  };
+
+  const handleDeleteEvent = async (id) => {
+    await axios.delete(/events/${id});
+    setEvents(events.filter(event => event.id !== id));
+  };
+
+  return (
+    <div>
+      <h1>Event Management Dashboard</h1>
+      <div>
+        <h2>Events</h2>
+        <ul>
+          {events.map(event => (
+            <li key={event.id}>
+              {event.name} - {event.date}
+              <button onClick={() => handleDeleteEvent(event.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+        {/* Add event form here */}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
